@@ -40,9 +40,9 @@ public class App {
     private float z = -5.0f;               // Depth Into The Screen
 
 
-    private float lightAmbient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-    private float lightDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-    private float lightPosition[] = { 0.0f, 0.0f, 2.0f, 1.0f };
+    private float lightAmbient[] = {0.5f, 0.5f, 0.5f, 1.0f};
+    private float lightDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    private float lightPosition[] = {0.0f, 0.0f, 2.0f, 1.0f};
 
     private int filter;                    // Which Filter To Use
     private Texture[] texture = new Texture[3];    // Storage For 3 Textures
@@ -78,12 +78,10 @@ public class App {
             while (!done) {
                 readAndAct();
                 render();
-                Display.update();
-                Thread.sleep(5);
+                DisplayManager.updateDisplay();
             }
-            Destroy();
-        }
-        catch (Exception e) {
+            DisplayManager.closeDisplay();
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);
         }
@@ -94,58 +92,57 @@ public class App {
      * lecture de souris, agissement IA, etc
      */
     private void readAndAct() {
-        if(Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {       // Exit if Escape is pressed
+        if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {       // Exit if Escape is pressed
             done = true;
         }
-        if(Display.isCloseRequested()) {                     // Exit if window is closed
+        if (Display.isCloseRequested()) {                     // Exit if window is closed
             done = true;
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_F1) && !f1) {    // Is F1 Being Pressed?
+        if (Keyboard.isKeyDown(Keyboard.KEY_F1) && !f1) {    // Is F1 Being Pressed?
             f1 = true;                                      // Tell Program F1 Is Being Held
             toggle();                                   // Toggle Fullscreen / Windowed Mode
         }
-        if(!Keyboard.isKeyDown(Keyboard.KEY_F1)) {          // Is F1 Being Pressed?
+        if (!Keyboard.isKeyDown(Keyboard.KEY_F1)) {          // Is F1 Being Pressed?
             f1 = false;
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_L) && !lp) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_L) && !lp) {
             lp = true;
             light = !light;
-            if(light) {
+            if (light) {
                 GL11.glEnable(GL11.GL_LIGHTING);
-            }
-            else {
+            } else {
                 GL11.glDisable(GL11.GL_LIGHTING);
             }
         }
-        if(!Keyboard.isKeyDown(Keyboard.KEY_L)) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_L)) {
             lp = false;
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_SPACE) && !sp) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && !sp) {
             sp = true;
             object++;
-            if(object > 5) {
+            if (object > 5) {
                 object = 0;
             }
         }
-        if(!Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
             sp = false;
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_PRIOR)) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_PRIOR)) {
             z -= 0.02f;
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_NEXT)) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_NEXT)) {
             z += 0.02f;
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
             xspeed -= 0.01f;
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
             xspeed += 0.01f;
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
             yspeed += 0.01f;
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
             yspeed -= 0.01f;
         }
     }
@@ -154,37 +151,35 @@ public class App {
         fullscreen = !fullscreen;
         try {
             Display.setFullscreen(fullscreen);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
-
-
     /**
      * Ici tous les dessin sont fait a l'ecran
      * le "rendering"
+     *
      * @return boolean si tous c'est bien passer
      */
     private boolean render() {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);  // Clear The Screen And The Depth Buffer
         GL11.glLoadIdentity();                                  // Reset The View
-        GL11.glTranslatef(0.0f,0.0f,z);
+        GL11.glTranslatef(0.0f, 0.0f, z);
 
-        GL11.glRotatef(xrot,1.0f,0.0f,0.0f);
-        GL11.glRotatef(yrot,0.0f,1.0f,0.0f);
+        GL11.glRotatef(xrot, 1.0f, 0.0f, 0.0f);
+        GL11.glRotatef(yrot, 0.0f, 1.0f, 0.0f);
 
         texture[0].bind();
         GL11.glColor3f(1.0f, 1.0f, 1.0f);
 
-        switch(object) {
+        switch (object) {
             case 0:
                 glDrawCube();
                 break;
             case 1:
-                GL11.glTranslatef(0.0f,0.0f,-1.5f);                  // Center The Cylinder
+                GL11.glTranslatef(0.0f, 0.0f, -1.5f);                  // Center The Cylinder
                 /* Each draw routine replaces a similar line of 'C' code.  For example, here is the old
                  * cylinder 'C' line:
                  *      gluCylinder(quadratic,1.0f,1.0f,3.0f,32,32);    // A Cylinder With A Radius Of 0.5 And A Height Of 2
@@ -201,20 +196,20 @@ public class App {
                 sphere.draw(1.3f, 32, 32);                // Draw A Sphere With A Radius Of 1 And 16 Longitude And 16 Latitude Segments
                 break;
             case 4:
-                GL11.glTranslatef(0.0f,0.0f,-1.5f);                  // Center The Cone
+                GL11.glTranslatef(0.0f, 0.0f, -1.5f);                  // Center The Cone
                 cone.draw(1.0f, 0.0f, 3.0f, 32, 32);    // A Cone With A Bottom Radius Of .5 And A Height Of 2
                 break;
             case 5:
                 part1 += p1;
                 part2 += p2;
 
-                if(part1 > 359) {                                   // 360 Degrees
+                if (part1 > 359) {                                   // 360 Degrees
                     p1 = 0;
                     part1 = 0;
                     p2 = 1;
                     part2 = 0;
                 }
-                if(part2 > 359) {                                   // 360 Degrees
+                if (part2 > 359) {                                   // 360 Degrees
                     p1 = 1;
                     p2 = 0;
                 }
@@ -228,36 +223,11 @@ public class App {
     }
 
     /**
-     * Cr?e la fenetre
-     * @throws Exception Throws Window.create() exception.
-     */
-    private void createWindow() throws Exception {
-        //demande tous les mode d'affichage disponible
-        DisplayMode d[] = Display.getAvailableDisplayModes();
-        //parcour tous les mode retourn? et selectionne celui ou
-        //hauteur = 480, largeur = 640, et ou on a 32 bits par pixel
-        for (int i = 0; i < d.length; i++) {
-            if (d[i].getWidth() == 640
-                    && d[i].getHeight() == 480
-                    && d[i].getBitsPerPixel() == 32) {
-                displayMode = d[i];
-                break;
-            }
-        }
-        Display.setDisplayMode(displayMode);
-        Display.setTitle(windowTitle);
-        Display.create();
-    }
-
-    /**
      * Faire toute les initialisation ici, comme le clavier et openGL
      */
     private void init() throws Exception {
-
-        createWindow();
-
-        texture[0] =TextureLoader.getTexture("BMP", ResourceLoader.getResourceAsStream("textures/Wall.bmp"));
-
+        DisplayManager.createDisplay();
+        texture[0] = TextureLoader.getTexture("BMP", ResourceLoader.getResourceAsStream("textures/Wall.bmp"));
         initGL();
 
         /*
@@ -290,7 +260,6 @@ public class App {
 
     /**
      * Init OpenGL
-     *
      */
     private void initGL() {                                     // All Setup For OpenGL Goes Here
 
@@ -305,63 +274,89 @@ public class App {
 
         // Calculate The Aspect Ratio Of The Window
         GLU.gluPerspective(45.0f,
-                (float) displayMode.getWidth() / (float) displayMode.getHeight(),
-                0.1f,100.0f);
+                (float) DisplayManager.getDisplayMode().getWidth() / (float) DisplayManager.getDisplayMode().getHeight(),
+                0.1f, 100.0f);
         GL11.glMatrixMode(GL11.GL_MODELVIEW); // Select The Modelview Matrix
 
         // Really Nice Perspective Calculations
         GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);
         ByteBuffer temp = ByteBuffer.allocateDirect(16);
         temp.order(ByteOrder.nativeOrder());
-        GL11.glLight(GL11.GL_LIGHT1, GL11.GL_AMBIENT, (FloatBuffer)temp.asFloatBuffer().put(lightAmbient).flip());              // Setup The Ambient Light
-        GL11.glLight(GL11.GL_LIGHT1, GL11.GL_DIFFUSE, (FloatBuffer)temp.asFloatBuffer().put(lightDiffuse).flip());              // Setup The Diffuse Light
-        GL11.glLight(GL11.GL_LIGHT1, GL11.GL_POSITION,(FloatBuffer)temp.asFloatBuffer().put(lightPosition).flip());         // Position The Light
+        GL11.glLight(GL11.GL_LIGHT1, GL11.GL_AMBIENT, (FloatBuffer) temp.asFloatBuffer().put(lightAmbient).flip());              // Setup The Ambient Light
+        GL11.glLight(GL11.GL_LIGHT1, GL11.GL_DIFFUSE, (FloatBuffer) temp.asFloatBuffer().put(lightDiffuse).flip());              // Setup The Diffuse Light
+        GL11.glLight(GL11.GL_LIGHT1, GL11.GL_POSITION, (FloatBuffer) temp.asFloatBuffer().put(lightPosition).flip());         // Position The Light
         GL11.glEnable(GL11.GL_LIGHT1);                          // Enable Light One
     }
-    /**
-     * nettoyage.
-     */
-    private void Destroy() {
-        Display.destroy();
-    }
+
+//    /**
+//     * nettoyage.
+//     */
+//    private void Destroy() {
+//        Display.destroy();
+//    }
+
     private void glDrawCube() {
         GL11.glBegin(GL11.GL_QUADS);
         // Front Face
-        GL11.glNormal3f( 0.0f, 0.0f, 1.0f);
-        GL11.glTexCoord2f(0.0f, 0.0f); GL11.glVertex3f(-1.0f, -1.0f,  1.0f);
-        GL11.glTexCoord2f(1.0f, 0.0f); GL11.glVertex3f( 1.0f, -1.0f,  1.0f);
-        GL11.glTexCoord2f(1.0f, 1.0f); GL11.glVertex3f( 1.0f,  1.0f,  1.0f);
-        GL11.glTexCoord2f(0.0f, 1.0f); GL11.glVertex3f(-1.0f,  1.0f,  1.0f);
+        GL11.glNormal3f(0.0f, 0.0f, 1.0f);
+        GL11.glTexCoord2f(0.0f, 0.0f);
+        GL11.glVertex3f(-1.0f, -1.0f, 1.0f);
+        GL11.glTexCoord2f(1.0f, 0.0f);
+        GL11.glVertex3f(1.0f, -1.0f, 1.0f);
+        GL11.glTexCoord2f(1.0f, 1.0f);
+        GL11.glVertex3f(1.0f, 1.0f, 1.0f);
+        GL11.glTexCoord2f(0.0f, 1.0f);
+        GL11.glVertex3f(-1.0f, 1.0f, 1.0f);
         // Back Face
-        GL11.glNormal3f( 0.0f, 0.0f,-1.0f);
-        GL11.glTexCoord2f(1.0f, 0.0f); GL11.glVertex3f(-1.0f, -1.0f, -1.0f);
-        GL11.glTexCoord2f(1.0f, 1.0f); GL11.glVertex3f(-1.0f,  1.0f, -1.0f);
-        GL11.glTexCoord2f(0.0f, 1.0f); GL11.glVertex3f( 1.0f,  1.0f, -1.0f);
-        GL11.glTexCoord2f(0.0f, 0.0f); GL11.glVertex3f( 1.0f, -1.0f, -1.0f);
+        GL11.glNormal3f(0.0f, 0.0f, -1.0f);
+        GL11.glTexCoord2f(1.0f, 0.0f);
+        GL11.glVertex3f(-1.0f, -1.0f, -1.0f);
+        GL11.glTexCoord2f(1.0f, 1.0f);
+        GL11.glVertex3f(-1.0f, 1.0f, -1.0f);
+        GL11.glTexCoord2f(0.0f, 1.0f);
+        GL11.glVertex3f(1.0f, 1.0f, -1.0f);
+        GL11.glTexCoord2f(0.0f, 0.0f);
+        GL11.glVertex3f(1.0f, -1.0f, -1.0f);
         // Top Face
-        GL11.glNormal3f( 0.0f, 1.0f, 0.0f);
-        GL11.glTexCoord2f(0.0f, 1.0f); GL11.glVertex3f(-1.0f,  1.0f, -1.0f);
-        GL11.glTexCoord2f(0.0f, 0.0f); GL11.glVertex3f(-1.0f,  1.0f,  1.0f);
-        GL11.glTexCoord2f(1.0f, 0.0f); GL11.glVertex3f( 1.0f,  1.0f,  1.0f);
-        GL11.glTexCoord2f(1.0f, 1.0f); GL11.glVertex3f( 1.0f,  1.0f, -1.0f);
+        GL11.glNormal3f(0.0f, 1.0f, 0.0f);
+        GL11.glTexCoord2f(0.0f, 1.0f);
+        GL11.glVertex3f(-1.0f, 1.0f, -1.0f);
+        GL11.glTexCoord2f(0.0f, 0.0f);
+        GL11.glVertex3f(-1.0f, 1.0f, 1.0f);
+        GL11.glTexCoord2f(1.0f, 0.0f);
+        GL11.glVertex3f(1.0f, 1.0f, 1.0f);
+        GL11.glTexCoord2f(1.0f, 1.0f);
+        GL11.glVertex3f(1.0f, 1.0f, -1.0f);
         // Bottom Face
-        GL11.glNormal3f( 0.0f,-1.0f, 0.0f);
-        GL11.glTexCoord2f(1.0f, 1.0f); GL11.glVertex3f(-1.0f, -1.0f, -1.0f);
-        GL11.glTexCoord2f(0.0f, 1.0f); GL11.glVertex3f( 1.0f, -1.0f, -1.0f);
-        GL11.glTexCoord2f(0.0f, 0.0f); GL11.glVertex3f( 1.0f, -1.0f,  1.0f);
-        GL11.glTexCoord2f(1.0f, 0.0f); GL11.glVertex3f(-1.0f, -1.0f,  1.0f);
+        GL11.glNormal3f(0.0f, -1.0f, 0.0f);
+        GL11.glTexCoord2f(1.0f, 1.0f);
+        GL11.glVertex3f(-1.0f, -1.0f, -1.0f);
+        GL11.glTexCoord2f(0.0f, 1.0f);
+        GL11.glVertex3f(1.0f, -1.0f, -1.0f);
+        GL11.glTexCoord2f(0.0f, 0.0f);
+        GL11.glVertex3f(1.0f, -1.0f, 1.0f);
+        GL11.glTexCoord2f(1.0f, 0.0f);
+        GL11.glVertex3f(-1.0f, -1.0f, 1.0f);
         // Right Face
-        GL11.glNormal3f( 1.0f, 0.0f, 0.0f);
-        GL11.glTexCoord2f(1.0f, 0.0f); GL11.glVertex3f( 1.0f, -1.0f, -1.0f);
-        GL11.glTexCoord2f(1.0f, 1.0f); GL11.glVertex3f( 1.0f,  1.0f, -1.0f);
-        GL11.glTexCoord2f(0.0f, 1.0f); GL11.glVertex3f( 1.0f,  1.0f,  1.0f);
-        GL11.glTexCoord2f(0.0f, 0.0f); GL11.glVertex3f( 1.0f, -1.0f,  1.0f);
+        GL11.glNormal3f(1.0f, 0.0f, 0.0f);
+        GL11.glTexCoord2f(1.0f, 0.0f);
+        GL11.glVertex3f(1.0f, -1.0f, -1.0f);
+        GL11.glTexCoord2f(1.0f, 1.0f);
+        GL11.glVertex3f(1.0f, 1.0f, -1.0f);
+        GL11.glTexCoord2f(0.0f, 1.0f);
+        GL11.glVertex3f(1.0f, 1.0f, 1.0f);
+        GL11.glTexCoord2f(0.0f, 0.0f);
+        GL11.glVertex3f(1.0f, -1.0f, 1.0f);
         // Left Face
         GL11.glNormal3f(-1.0f, 0.0f, 0.0f);
-        GL11.glTexCoord2f(0.0f, 0.0f); GL11.glVertex3f(-1.0f, -1.0f, -1.0f);
-        GL11.glTexCoord2f(1.0f, 0.0f); GL11.glVertex3f(-1.0f, -1.0f,  1.0f);
-        GL11.glTexCoord2f(1.0f, 1.0f); GL11.glVertex3f(-1.0f,  1.0f,  1.0f);
-        GL11.glTexCoord2f(0.0f, 1.0f); GL11.glVertex3f(-1.0f,  1.0f, -1.0f);
+        GL11.glTexCoord2f(0.0f, 0.0f);
+        GL11.glVertex3f(-1.0f, -1.0f, -1.0f);
+        GL11.glTexCoord2f(1.0f, 0.0f);
+        GL11.glVertex3f(-1.0f, -1.0f, 1.0f);
+        GL11.glTexCoord2f(1.0f, 1.0f);
+        GL11.glVertex3f(-1.0f, 1.0f, 1.0f);
+        GL11.glTexCoord2f(0.0f, 1.0f);
+        GL11.glVertex3f(-1.0f, 1.0f, -1.0f);
         GL11.glEnd();
     }
 }
