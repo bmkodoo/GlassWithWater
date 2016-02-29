@@ -1,0 +1,18 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+mainClassName = "App"
+applicationDefaultJvmArgs = ["-Djava.library.path=lib/native/windows"]
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.lwjgl.lwjgl:lwjgl:2.9.3'
+    compile 'org.lwjgl.lwjgl:lwjgl_util:2.9.3'
+    compile 'org.slick2d:slick2d-core:1.0.1'
+}
+
